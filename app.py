@@ -5,15 +5,13 @@ import os
 import string
 import tarfile
 
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
+import boto3
+from botocore.exceptions import ClientError
 
 from glob import glob
 from datetime import timedelta
 
 # Configuration
-aws_access_key = os.environ['AWS_ACCESS_KEY']
-aws_secret_key = os.environ['AWS_SECRET_KEY']
 aws_bucket = os.environ['AWS_S3_BUCKET']
 
 dirs = glob('/data/*/')
@@ -23,8 +21,7 @@ today = datetime.date.today()
 previous = today - timedelta(days=7)
 
 # Establish S3 Connection
-s3 = S3Connection(aws_access_key, aws_secret_key)
-b = s3.get_bucket(aws_bucket)
+s3_client = boto3.client('s3')
 
 # File Backups
 for d in dirs:
@@ -39,19 +36,18 @@ for d in dirs:
     tar.add(d)
     tar.close()
 
-
-    k = Key(b)
-    k.key = file + '-' + str(today) + '.files.tar.gz'
-    k.set_contents_from_filename(out_file)
     print(f'[S3] Uploading file archive {file}...')
+    try:
+        resp = s3_client.upload_file(out_file, aws_bucket, filename)
+    except ClientError as e:
+        logging.error(e)
+        continue
 
     os.remove(out_file)
 
-    print('[S3] Clearing previous file archive {file}...')
+    print(f'[S3] Clearing previous file archive {file}...')
 
     # Preserve monthly backups (Previous Month)
     if previous != str(datetime.datetime.today().year) + '-' + str(datetime.datetime.today().month) + '-1':
         # Clean up files on S3
-        k = Key(b)
-        k.key = file + '-' + str(previous) + '.files.tar.gz'
-        b.delete_key(k)
+        s3_client.delete_object(Bucket=aws_bucket, Key=f'{file}-{str(previous)}.files.tar.gz')
