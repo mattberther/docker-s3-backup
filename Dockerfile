@@ -1,4 +1,4 @@
-FROM python:2.7.12-alpine
+FROM python:3.8.5-alpine
 
 RUN pip install boto
 ADD app.py /app.py
