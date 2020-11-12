@@ -25,5 +25,6 @@ The following parameters are able to be passed to the container. In the case of 
 * `-v </path/to/folder/to/backup>:/data/<foldername>` - one or more folders from the host that will be backed up to S3. The container's mountpoint will be used as the archive's base name. For example: mounting a folder to `<src>:/data/services-data`, will create an archive named `services-data-YYYY-MM-DD.files.tar.gz` in the configured S3 bucket.
 
 ## Versions
+* **0.3.0**: Implement proper S3 rotation retaining last 7 daily, last 4 weekly, last 12 monthly, and all yearly backups
 * **0.2.0**: Add ability to exclude files from backup 
 * **0.1.0**: Initial commit

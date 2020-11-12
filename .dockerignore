@@ -1,0 +1,9 @@
+.env
+.git
+.github
+.gitignore
+.python-version
+data/
+Dockerfile
+docker-compose.yml
+
