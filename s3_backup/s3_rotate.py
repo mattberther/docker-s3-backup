@@ -59,7 +59,7 @@ class S3Rotator(rotate_backups.RotateBackups):
                     deleted_files.append({'Key': backup.pathname})
 
         if deleted_files:
-            s3_client.delete_objects(Bucket=bucketname, Delete={'Objects': deleted_files})
+            self.s3_client.delete_objects(Bucket=bucketname, Delete={'Objects': deleted_files})
 
         if len(backups_to_preserve) == len(sorted_backups):
             logger.info("Nothing to do! (all backups preserved)")
