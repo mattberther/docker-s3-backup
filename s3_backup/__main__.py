@@ -36,7 +36,7 @@ s3_client = boto3.client('s3')
 def should_include(tarinfo):
     for x in exclude_files:
         if fnmatch.fnmatch(tarinfo.name, x):
-            logger.info(f'[FILE] Excluding {tarinfo.name} based on filter: {x}')
+            logger.debug(f'[FILE] Excluding {tarinfo.name} based on filter: {x}')
             return None
 
     return tarinfo
